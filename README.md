@@ -2,7 +2,7 @@
 
 [![npm status badge](https://nodei.co/npm/deepak.png?stars=true&downloads=true)](https://nodei.co/npm/deepak/)
 
-Formality is an Object aliasing module for server and client.
+Deepak is a highspeed packer & unpacker for strongly typed FoundationDB key and value data.
 
 This module is still early alpha and work is in progress. All contributions are welcome.
 
