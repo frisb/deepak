@@ -23,7 +23,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 ###
 
+module.exports = (tuple) ->
+  unpackValue = (val) ->
+    if(!val)
+       return null
 
-module.exports = (fdb) ->
-  pack: require('./pack')(fdb.tuple)
-  unpack: require('./unpack')(fdb.tuple)
+    unpacked = tuple.unpack(val)
+    type = unpacked[0]
+    val = unpacked[1]
+
+    switch type
+      when 0 then return                            # undefined
+      when 1 then val.toString('ascii')             # string
+      when 2 then val                               # integer
+      when 3 then parseFloat(val.toString('ascii')) # decimal
+      when 4 then val is 1                          # boolean
+      when 5 then null                              # null
+      when 6 then new Date(val)                     # date
+      when 7 then unpackArray(val)                  # array
+      when 8 then surreal.deserialize(val.toString('ascii')) # object
+
+      else
+        throw new Error("the type (#{type}) of the passed val is unknown")
+
+
+  unpackArray = (val) ->
+    arr = []
+    arr.push(unpackValue(child)) for child in tuple.unpack(val)
+    arr
+
+  unpackValue

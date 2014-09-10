@@ -5,7 +5,7 @@ module.exports = (grunt) ->
     clean:
       default:
         src: ['lib']
-        
+
     coffee:
       compile:
         options:
@@ -19,6 +19,14 @@ module.exports = (grunt) ->
           ext: '.js'
         ]
 
+    mochaTest:
+      test:
+        options:
+          reporter: 'spec'
+          require: 'coffee-script/register'
+        src: ['test/**/*.coffee']
+
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-coffee')
-  grunt.registerTask('default', ['clean', 'coffee'])
+  grunt.loadNpmTasks('grunt-mocha-test')
+  grunt.registerTask('default', ['clean', 'coffee', 'mochaTest'])
