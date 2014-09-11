@@ -26,7 +26,7 @@ THE SOFTWARE
 module.exports = (tuple) ->
   packValue = (val) ->
     switch typeof val
-      when 'undefined' then tuple.pack([0])                         # undefined
+      when 'undefined' then tuple.pack([])                          # undefined
       when 'string' then tuple.pack([1, new Buffer(val, 'ascii')])  # string
       when 'number' then packNumber(val)                            # number
       when 'boolean' then tuple.pack([4, (if val then 1 else 0)])   # boolean
@@ -37,10 +37,10 @@ module.exports = (tuple) ->
     else tuple.pack([3, new Buffer('' + val, 'ascii')]) # decimal
 
   packObject = (val) ->
-    if (val is null) then tuple.pack([5])                                                           # null
-    else if (val instanceof Date) then tuple.pack([6, val.getTime()])                               # dates
-    else if (val instanceof Array) then tuple.pack([7, packArray(val)])                             # array
-    else if (val instanceof Object) then tuple.pack([8, new Buffer(surreal.serialize(val), 'ascii')])  # object
+    if (val is null) then tuple.pack([5])                                                             # null
+    else if (val instanceof Date) then tuple.pack([6, val.getTime()])                                 # dates
+    else if (val instanceof Array) then tuple.pack([7, packArray(val)])                               # array
+    else if (val instanceof Object) then tuple.pack([8, new Buffer(surreal.serialize(val), 'ascii')]) # object
 
     else
       throw new Error("the packValue function only accepts string, number, boolean, date, array and object")

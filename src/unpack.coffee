@@ -33,7 +33,7 @@ module.exports = (tuple) ->
     val = unpacked[1]
 
     switch type
-      when 0 then return                            # undefined
+      when undefined then return                    # undefined
       when 1 then val.toString('ascii')             # string
       when 2 then val                               # integer
       when 3 then parseFloat(val.toString('ascii')) # decimal
@@ -45,7 +45,6 @@ module.exports = (tuple) ->
 
       else
         throw new Error("the type (#{type}) of the passed val is unknown")
-
 
   unpackArray = (val) ->
     arr = []
