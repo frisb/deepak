@@ -1,14 +1,14 @@
 {
   "name": "deepak",
   "description": "Deep packer & unpacker for strongly typed high performance FoundationDB key and value data",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "contributors": [
     {
       "name": "Ashley Brener",
       "url": "http://frisB.com"
     }
   ],
-  "main": "src/",
+  "main": "lib/",
   "engines": {
     "node": ">= 0.8.x"
   },

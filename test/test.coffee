@@ -11,6 +11,7 @@ testType = (name, value) ->
 
 describe 'Pack / Unpack', ->
   describe 'Types', ->
+    testType('end of DB', '\xff')
     testType('undefined', undefined)
     testType('string', 'string')
     testType('integer', 100)

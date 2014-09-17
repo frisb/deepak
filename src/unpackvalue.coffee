@@ -28,10 +28,11 @@ unpackArray = (deepak, val) ->
   deepak.unpackArrayValues(arr)
 
 module.exports = (val) ->
-  if(!val)
-     return null
+  return null if !val
+  return val if val is '\xff'
 
   unpacked = @tuple.unpack(val)
+
   type = unpacked[0]
   val = unpacked[1]
 

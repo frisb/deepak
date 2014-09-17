@@ -28,7 +28,7 @@ packNumber = (deepak, val) ->
   else deepak.tuple.pack([3, new Buffer('' + val, 'ascii')]) # decimal
 
 packObject = (deepak, val) ->
-  if (val is null) then deepak.tuple.pack([5])                                                                     # null
+  if (val is null) then deepak.tuple.pack([5])                                                              # null
   else if (val instanceof Date) then deepak.tuple.pack([6, val.getTime()])                                  # dates
   else if (val instanceof Array) then deepak.tuple.pack([7, packArray(deepak, val)])                        # array
   else if (val instanceof Object) then deepak.tuple.pack([8, new Buffer(surreal.serialize(val), 'ascii')])  # object
@@ -40,6 +40,8 @@ packArray = (deepak, val) ->
   deepak.tuple.pack(deepak.packArrayValues(val))
 
 module.exports = (val) ->
+  return val if val is '\xff'
+  
   switch typeof val
     when 'undefined' then @tuple.pack([])                         # undefined
     when 'string' then @tuple.pack([1, new Buffer(val, 'ascii')]) # string
