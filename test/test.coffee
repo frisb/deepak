@@ -5,9 +5,9 @@ deepak = require('../lib/index')(fdb)
 testType = (name, value) ->
   describe name, ->
     it 'should return ' + name, ->
-      packedValue = deepak.pack(value)
-      unpackedValue = deepak.unpack(packedValue)
-      assert.deepEqual(value, unpackedValue)
+      packed = deepak.packValue(value)
+      unpacked = deepak.unpackValue(packed)
+      assert.deepEqual(value, unpacked)
 
 describe 'Pack / Unpack', ->
   describe 'Types', ->

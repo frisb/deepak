@@ -1,5 +1,6 @@
+surreal = require('surreal')
 
-/* Modelled on https://github.com/leaflevellabs/node-foundationdblayers/blob/master/lib/utils.js
+### Modelled on https://github.com/leaflevellabs/node-foundationdblayers/blob/master/lib/utils.js
 
 Copyright (c) 2013 Alex Gadea, All rights reserved.
 
@@ -20,35 +21,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
- */
+###
 
-(function() {
-  var Deepak, instance;
-
-  Deepak = (function() {
-    function Deepak(tuple) {
-      this.tuple = tuple;
-    }
-
-    Deepak.prototype.packValue = require('./packvalue');
-
-    Deepak.prototype.unpackValue = require('./unpackvalue');
-
-    Deepak.prototype.packArrayValues = require('./packarrayvalues');
-
-    Deepak.prototype.unpackArrayValues = require('./unpackarrayvalues');
-
-    return Deepak;
-
-  })();
-
-  instance = null;
-
-  module.exports = function(fdb) {
-    if (instance === null) {
-      instance = new Deepak(fdb.tuple);
-    }
-    return instance;
-  };
-
-}).call(this);
+module.exports = (val) ->
+  arr = []
+  arr.push(@packValue(child)) for child in val
+  arr

@@ -1,5 +1,3 @@
-surreal = require('surreal')
-
 ### Modelled on https://github.com/leaflevellabs/node-foundationdblayers/blob/master/lib/utils.js
 
 Copyright (c) 2013 Alex Gadea, All rights reserved.
@@ -23,7 +21,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 ###
 
+class Deepak
+  constructor: (@tuple) ->
+  packValue: require('./packvalue')
+  unpackValue: require('./unpackvalue')
+  packArrayValues: require('./packarrayvalues')
+  unpackArrayValues: require('./unpackarrayvalues')
+
+instance = null
 
 module.exports = (fdb) ->
-  pack: require('./pack')(fdb.tuple)
-  unpack: require('./unpack')(fdb.tuple)
+  if (instance is null)
+    instance = new Deepak(fdb.tuple)
+
+  instance

@@ -1,5 +1,6 @@
+surreal = require('surreal')
 
-/* Modelled on https://github.com/leaflevellabs/node-foundationdblayers/blob/master/lib/utils.js
+### Modelled on https://github.com/leaflevellabs/node-foundationdblayers/blob/master/lib/utils.js
 
 Copyright (c) 2013 Alex Gadea, All rights reserved.
 
@@ -20,35 +21,30 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
- */
+###
 
-(function() {
-  var Deepak, instance;
+unpackArray = (deepak, val) ->
+  arr = deepak.tuple.unpack(val)
+  deepak.unpackArrayValues(arr)
 
-  Deepak = (function() {
-    function Deepak(tuple) {
-      this.tuple = tuple;
-    }
+module.exports = (val) ->
+  if(!val)
+     return null
 
-    Deepak.prototype.packValue = require('./packvalue');
+  unpacked = @tuple.unpack(val)
+  type = unpacked[0]
+  val = unpacked[1]
 
-    Deepak.prototype.unpackValue = require('./unpackvalue');
+  switch type
+    when undefined then return                    # undefined
+    when 1 then val.toString('ascii')             # string
+    when 2 then val                               # integer
+    when 3 then parseFloat(val.toString('ascii')) # decimal
+    when 4 then val is 1                          # boolean
+    when 5 then null                              # null
+    when 6 then new Date(val)                     # date
+    when 7 then unpackArray(@, val)                  # array
+    when 8 then surreal.deserialize(val.toString('ascii')) # object
 
-    Deepak.prototype.packArrayValues = require('./packarrayvalues');
-
-    Deepak.prototype.unpackArrayValues = require('./unpackarrayvalues');
-
-    return Deepak;
-
-  })();
-
-  instance = null;
-
-  module.exports = function(fdb) {
-    if (instance === null) {
-      instance = new Deepak(fdb.tuple);
-    }
-    return instance;
-  };
-
-}).call(this);
+    else
+      throw new Error("the type (#{type}) of the passed val is unknown")
