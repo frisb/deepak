@@ -23,29 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 ###
 
-unpackArray = (deepak, val) ->
-  arr = deepak.tuple.unpack(val)
-  deepak.unpackArrayValues(arr)
-
 module.exports = (val) ->
   return null if !val
   return val if val is '\xff'
 
-  unpacked = @tuple.unpack(val)
-
-  type = unpacked[0]
-  val = unpacked[1]
+  type = val.slice(0, 1).readUInt8(0)
+  val = val.slice(1)
 
   switch type
-    when undefined then return                    # undefined
-    when 1 then val.toString('ascii')             # string
-    when 2 then val                               # integer
-    when 3 then parseFloat(val.toString('ascii')) # decimal
-    when 4 then val is 1                          # boolean
-    when 5 then null                              # null
-    when 6 then new Date(val)                     # date
-    when 7 then unpackArray(@, val)                  # array
-    when 8 then surreal.deserialize(val.toString('ascii')) # object
+    when 0 then return                                        # undefined
+
+    when 1 then val.toString('ascii')                         # string
+
+    when 2 then parseInt(val.toString('ascii'), 10)           # integer
+
+    when 3 then parseFloat(val.toString('ascii'), 10)         # decimal
+
+    when 4 then val.readUInt8(0) is 1                         # boolean
+
+    when 5 then null                                          # null
+
+    when 6 then new Date(parseInt(val.toString('ascii'), 10)) # date
+
+    when 7 then @unpackArray(@fdb.tuple.unpack(val))          # array
+
+    when 8 then surreal.deserialize(val.toString('ascii'))    # object
 
     else
       throw new Error("the type (#{type}) of the passed val is unknown")

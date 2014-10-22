@@ -23,28 +23,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 ###
 
-packNumber = (deepak, val) ->
-  if (val % 1 is 0) then deepak.tuple.pack([2, val])         # integer
-  else deepak.tuple.pack([3, new Buffer('' + val, 'ascii')]) # decimal
+packUIntByte = (val, buf) ->
+  buf = new Buffer(1) if !buf
+  buf.writeUInt8(val, 0)
+  buf
 
-packObject = (deepak, val) ->
-  if (val is null) then deepak.tuple.pack([5])                                                              # null
-  else if (val instanceof Date) then deepak.tuple.pack([6, val.getTime()])                                  # dates
-  else if (val instanceof Array) then deepak.tuple.pack([7, packArray(deepak, val)])                        # array
-  else if (val instanceof Object) then deepak.tuple.pack([8, new Buffer(surreal.serialize(val), 'ascii')])  # object
+packBuffer = (typeCode, buf) ->
+  len = 1
+  len += buf.length if buf
 
-  else
-    throw new Error("the packValue function only accepts string, number, boolean, date, array and object")
+  packedVal = new Buffer(len)
+  packUIntByte(typeCode, packedVal)
 
-packArray = (deepak, val) ->
-  deepak.tuple.pack(deepak.packArrayValues(val))
+  buf.copy(packedVal, 1) if buf
+
+  packedVal
 
 module.exports = (val) ->
   return val if val is '\xff'
-  
+
   switch typeof val
-    when 'undefined' then @tuple.pack([])                         # undefined
-    when 'string' then @tuple.pack([1, new Buffer(val, 'ascii')]) # string
-    when 'number' then packNumber(@, val)                         # number
-    when 'boolean' then @tuple.pack([4, (if val then 1 else 0)])  # boolean
-    else packObject(@, val)
+    when 'undefined' then packBuffer(0)                           # undefined
+
+    when 'string' then packBuffer(1, new Buffer(val, 'ascii'))    # string
+
+    when 'number'
+      if (val % 1 is 0)
+        packBuffer(2, new Buffer('' + val, 'ascii'))              # integer
+      else
+        packBuffer(3, new Buffer('' + val, 'ascii'))              # decimal
+
+    when 'boolean'
+      packBuffer(4, packUIntByte(if val then 1 else 0))           # boolean
+
+    else
+      if (val is null)
+        packBuffer(5)                                             # null
+
+      else if (val instanceof Date)
+        packBuffer(6, new Buffer('' + val.getTime(), 'ascii'))    # dates
+
+      else if (val instanceof Array)
+        packBuffer(7, @fdb.tuple.pack(@packArray(val)))           # array
+
+      else if (val instanceof Object)
+        packBuffer(8, new Buffer(surreal.serialize(val), 'ascii')) # object
+
+      else
+        throw new Error("the packValue function only accepts string, number, boolean, date, array and object")

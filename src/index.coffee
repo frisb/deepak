@@ -22,16 +22,19 @@ THE SOFTWARE
 ###
 
 class Deepak
-  constructor: (@tuple) ->
+  constructor: (@fdb) ->
+    @db = @fdb.open()
+
   packValue: require('./packvalue')
   unpackValue: require('./unpackvalue')
-  packArrayValues: require('./packarrayvalues')
-  unpackArrayValues: require('./unpackarrayvalues')
+  packArray: require('./packarray')
+  unpackArray: require('./unpackarray')
 
 instance = null
 
 module.exports = (fdb) ->
   if (instance is null)
-    instance = new Deepak(fdb.tuple)
+    fdb ?= require('fdb').apiVersion(200)
+    instance = new Deepak(fdb)
 
   instance
